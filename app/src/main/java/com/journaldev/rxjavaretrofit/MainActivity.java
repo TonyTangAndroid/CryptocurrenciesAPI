@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
     private ZippedCryptoDataModel zip(CryptoDataModel btc, CryptoDataModel eth) {
 
         long latest =Math.max(btc.serverCoinModel.timestamp,eth.serverCoinModel.timestamp);
-        List<CoinMarket> coinMarkets = MergeHelper.mergeAndSort(btc, eth);
+        List<CoinMarket> coinMarkets = MergeHelper.mergeAndSortV0(btc, eth);
         return new ZippedCryptoDataModel(latest,coinMarkets);
 
     }
