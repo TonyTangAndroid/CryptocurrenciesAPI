@@ -21,7 +21,6 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -94,26 +93,9 @@ public class MainActivity extends AppCompatActivity {
     private ZippedCryptoDataModel zip(CryptoDataModel btc, CryptoDataModel eth) {
 
         long latest =Math.max(btc.serverCoinModel.timestamp,eth.serverCoinModel.timestamp);
-        List<CoinMarket> coinMarkets = mergeAndSort(btc, eth);
+        List<CoinMarket> coinMarkets = MergeHelper.mergeAndSortV0(btc, eth);
         return new ZippedCryptoDataModel(latest,coinMarkets);
 
-    }
-
-    private List<CoinMarket> mergeAndSort(CryptoDataModel btc, CryptoDataModel eth) {
-        Observable<CoinMarket> btcStream = coinMarketStream(btc);
-        Observable<CoinMarket> ethStream = coinMarketStream(eth);
-        return Observable.merge(btcStream, ethStream)
-            .sorted(new Comparator<CoinMarket>() {
-                @Override
-                public int compare(CoinMarket o1, CoinMarket o2) {
-                    return Float.compare(o2.market.volume, o1.market.volume);
-                }
-            }).toList().blockingGet();
-    }
-
-    private Observable<CoinMarket> coinMarketStream(CryptoDataModel btc) {
-        return Observable.fromIterable(btc.serverCoinModel.markets)
-            .map(market -> new CoinMarket(btc.coinName, market));
     }
 
     private Observable<CryptoDataModel> coinStream(String coinName) {
